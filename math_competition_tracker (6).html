@@ -1,0 +1,1545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PAUL's Achievement Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F3F5F1;
+    --paper-line:#DDE3D9;
+    --ink:#182A3D;
+    --ink-soft:#4B5C6B;
+    --navy:#16305C;
+    --navy-deep:#0E2144;
+    --gold:#F0A500;
+    --gold-soft:#FCE8B8;
+    --silver:#8FA0AB;
+    --silver-soft:#E7ECEE;
+    --bronze:#8B4A1F;
+    --bronze-soft:#E9D3BF;
+    --teal:#1F6F63;
+    --teal-soft:#DCEEE9;
+    --red:#B23A3A;
+    --red-soft:#F6DFDD;
+    --amber:#C97A1F;
+    --amber-soft:#FBE7CE;
+    --purple:#6A4C93;
+    --purple-soft:#E7DFF2;
+    --blue:#2A6BA8;
+    --blue-soft:#DCE8F2;
+    --white:#FFFFFF;
+    --radius:14px;
+    --shadow: 0 1px 2px rgba(22,34,53,0.06), 0 6px 20px rgba(22,34,53,0.06);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+    background:
+      repeating-linear-gradient(to bottom, transparent, transparent 27px, var(--paper-line) 28px),
+      var(--paper);
+    min-height:100vh;
+  }
+  .wrap{max-width:1040px;margin:0 auto;padding:20px 18px 80px;}
+
+  header.top{
+    background: linear-gradient(135deg, var(--navy-deep), var(--navy));
+    border-radius: var(--radius);
+    padding: 26px 26px 20px;
+    color: var(--white);
+    box-shadow: var(--shadow);
+    margin-bottom:20px;
+    position:relative;
+    overflow:hidden;
+  }
+  header.top::after{
+    content:"";
+    position:absolute; inset:0;
+    background-image: radial-gradient(circle at 90% -10%, rgba(201,151,42,0.25), transparent 55%);
+    pointer-events:none;
+  }
+  header.top h1{
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    font-size: clamp(22px, 4vw, 30px);
+    margin:0 0 4px;
+    letter-spacing:0.2px;
+  }
+  header.top .sub{
+    font-size:13.5px;
+    color:#C7D3E0;
+    margin-bottom:18px;
+  }
+  .medal-shelf{
+    display:flex; gap:14px; flex-wrap:wrap;
+  }
+  .medal{
+    display:flex; align-items:center; gap:10px;
+    background:rgba(255,255,255,0.07);
+    border:1px solid rgba(255,255,255,0.14);
+    border-radius:12px;
+    padding:10px 16px;
+    min-width:104px;
+  }
+  .medal .dot{
+    width:30px;height:30px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:13px;
+    box-shadow: inset 0 -3px 0 rgba(0,0,0,0.2), 0 1px 0 rgba(255,255,255,0.4);
+    color:#3a2c00;
+  }
+  .medal.gold .dot{background:linear-gradient(160deg,#FFD866,var(--gold));}
+  .medal.silver .dot{background:linear-gradient(160deg,#E5EBEE,var(--silver)); color:#2b3237;}
+  .medal.bronze .dot{background:linear-gradient(160deg,#C97A42,var(--bronze)); color:#fff;}
+  .medal .count{font-family:'IBM Plex Mono',monospace; font-size:20px; font-weight:600; line-height:1;}
+  .medal .label{font-size:11px; color:#B9C6D6; margin-top:2px;}
+
+  nav.tabs{
+    display:flex; gap:6px; margin-bottom:18px;
+    background:var(--white); border-radius:12px; padding:5px;
+    box-shadow: var(--shadow); overflow-x:auto;
+  }
+  nav.tabs button{
+    flex:1; white-space:nowrap;
+    border:none; background:transparent; cursor:pointer;
+    padding:10px 14px; border-radius:9px;
+    font-family:inherit; font-size:14px; font-weight:600; color:var(--ink-soft);
+    transition: all .15s ease;
+  }
+  nav.tabs button.active{ background:var(--navy); color:var(--white); }
+  nav.tabs button .badge{
+    display:inline-block; margin-left:6px; background:var(--red); color:#fff;
+    font-size:10.5px; font-weight:700; border-radius:20px; padding:1px 6px;
+    font-family:'IBM Plex Mono',monospace;
+  }
+
+  .panel{display:none;}
+  .panel.active{display:block; animation: fadein .18s ease;}
+  @keyframes fadein{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;}}
+
+  .toolbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; gap:10px; flex-wrap:wrap;}
+  .toolbar h2{font-family:'Fraunces',serif; font-size:19px; margin:0; font-weight:600;}
+  .toolbar .hint{font-size:12.5px; color:var(--ink-soft);}
+
+  button.btn{
+    font-family:inherit; cursor:pointer; border:none; border-radius:9px;
+    padding:9px 16px; font-size:13.5px; font-weight:600;
+    background:var(--navy); color:#fff; transition:transform .1s ease, background .15s;
+  }
+  button.btn:hover{background:var(--navy-deep);}
+  button.btn:active{transform:scale(0.97);}
+  button.btn.ghost{background:transparent; color:var(--navy); border:1.5px solid var(--navy);}
+  button.btn.ghost:hover{background:var(--navy); color:#fff;}
+  button.btn.small{padding:6px 11px; font-size:12.5px; border-radius:7px;}
+  button.btn.danger{background:var(--red);}
+  button.btn.danger:hover{background:#8f2e2e;}
+  button.btn.mail{background:var(--teal);}
+  button.btn.mail:hover{background:#164f45;}
+  button.btn.cal{background:var(--blue);}
+  button.btn.cal:hover{background:#1f5480;}
+
+  .card{
+    background:var(--white); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:16px; margin-bottom:12px;
+  }
+  .empty{
+    text-align:center; padding:46px 20px; color:var(--ink-soft);
+    background:var(--white); border-radius:var(--radius); box-shadow:var(--shadow);
+    font-size:14px;
+  }
+  .empty .big{font-size:34px; margin-bottom:8px;}
+
+  select#subjectFilter{
+    padding:8px 10px; border-radius:8px; border:1.5px solid #DCE3EA; font-family:inherit; font-size:13px; background:#fff;
+  }
+
+  .record-row{
+    display:grid; grid-template-columns: 1fr auto; gap:10px;
+    padding:14px 4px; border-bottom:1px solid #EEF0EC;
+  }
+  .record-row:last-child{border-bottom:none;}
+  .record-title{font-weight:600; font-size:15px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+  .chip{
+    display:inline-flex; align-items:center; gap:5px;
+    font-size:11.5px; font-weight:700; padding:3px 9px; border-radius:20px;
+    font-family:'IBM Plex Mono',monospace;
+  }
+  .chip.gold{background:var(--gold-soft); color:#7a5c14;}
+  .chip.silver{background:var(--silver-soft); color:#3f4d57;}
+  .chip.bronze{background:var(--bronze-soft); color:#7a441a;}
+  .chip.other{background:var(--teal-soft); color:#154b41;}
+  .chip.none{background:#EEF0EC; color:var(--ink-soft);}
+  .subject-tag{
+    font-size:11px; font-weight:700; padding:3px 9px; border-radius:20px; text-transform:uppercase; letter-spacing:0.3px;
+  }
+  .subject-tag.math{background:var(--blue-soft); color:#1a4a72;}
+  .subject-tag.robotics{background:var(--purple-soft); color:#4a3468;}
+  .subject-tag.english{background:var(--teal-soft); color:#154b41;}
+  .subject-tag.science{background:var(--amber-soft); color:#7a4c10;}
+  .subject-tag.othersubj{background:#EEF0EC; color:var(--ink-soft);}
+  .meta-line{font-size:12.5px; color:var(--ink-soft); margin-top:4px; font-family:'IBM Plex Mono',monospace;}
+  .prog-tags{margin-top:8px; display:flex; gap:6px; flex-wrap:wrap;}
+  .prog-tag{
+    font-size:11px; background:#EEF2F6; color:var(--navy); padding:3px 8px; border-radius:6px;
+    border:1px solid #DCE3EA;
+  }
+  .row-actions{display:flex; gap:6px; align-self:start;}
+
+  .prog-card{
+    background:var(--white); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:16px; margin-bottom:12px; display:grid; grid-template-columns:1fr auto; gap:10px;
+  }
+  .prog-name{font-weight:700; font-size:15px; font-family:'Fraunces',serif;}
+  .prog-org{font-size:12.5px; color:var(--navy); font-weight:600; margin-top:2px;}
+  .prog-dates{font-size:12px; color:var(--ink-soft); margin-top:8px; font-family:'IBM Plex Mono',monospace; line-height:1.7;}
+  .prog-dates b{color:var(--ink);}
+
+  .deadline-item{
+    background:var(--white); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:14px 16px; margin-bottom:10px;
+    display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;
+  }
+  .deadline-left{flex:1; min-width:220px;}
+  .deadline-item .p-name{font-weight:700; font-size:14.5px;}
+  .deadline-item .r-name{font-size:13px; color:var(--ink-soft); margin-top:3px;}
+  .deadline-right{display:flex; flex-direction:column; align-items:flex-end; gap:8px;}
+  .countdown{
+    font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:13px;
+    padding:7px 12px; border-radius:9px; text-align:center; min-width:98px;
+  }
+  .countdown.urgent{background:var(--red-soft); color:#7a2323;}
+  .countdown.soon{background:var(--amber-soft); color:#7a4c10;}
+  .countdown.ok{background:var(--teal-soft); color:#154b41;}
+  .countdown.closed{background:#EEF0EC; color:#8a8f86;}
+  .countdown .sub{display:block; font-size:9.5px; font-weight:600; margin-top:2px; letter-spacing:0.4px;}
+  label.check{display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--ink-soft); cursor:pointer;}
+  .action-row{display:flex; gap:6px;}
+  .linked-records{ margin-top:8px; display:flex; flex-direction:column; }
+  .linked-record-row{ display:flex; justify-content:space-between; align-items:center; gap:10px; font-size:12.5px; color:var(--ink-soft); padding:6px 0; border-top:1px dashed #EEF0EC; }
+  .linked-record-row:first-child{ border-top:none; }
+
+  .filter-toggle{display:flex; gap:8px; align-items:center; font-size:13px; color:var(--ink-soft); margin-bottom:14px;}
+  .filter-toggle input{width:16px;height:16px;}
+
+  .backup-bar{
+    display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;
+    background:var(--white); border-radius:12px; padding:10px 14px; margin-bottom:18px; box-shadow:var(--shadow);
+  }
+  .backup-note{font-size:12px; color:var(--ink-soft);}
+  .backup-actions{display:flex; gap:8px;}
+
+  .note-box{
+    background:var(--blue-soft); border:1px solid #C7DCEC; border-radius:12px;
+    padding:12px 16px; font-size:12.5px; color:#1a4a72; margin-bottom:16px; line-height:1.6;
+  }
+  .note-box b{color:#0e3352;}
+
+  .section-title{font-family:'Fraunces',serif; font-size:16px; font-weight:600; margin:22px 0 10px;}
+  .section-title:first-child{margin-top:0;}
+
+  table.dash-table{width:100%; border-collapse:collapse; font-size:13.5px;}
+  table.dash-table th, table.dash-table td{ text-align:left; padding:9px 10px; border-bottom:1px solid #EEF0EC; }
+  table.dash-table th{ color:var(--ink-soft); font-size:11.5px; text-transform:uppercase; letter-spacing:0.4px; font-weight:700; }
+  table.dash-table td.num{ font-family:'IBM Plex Mono',monospace; font-weight:600; text-align:center; }
+  table.dash-table tr:last-child td{border-bottom:none;}
+  table.dash-table tr.total-row td{ font-weight:700; border-top:2px solid var(--navy); }
+
+  /* Hero trophy stat cards */
+  .hero-trophy{ display:grid; grid-template-columns:repeat(auto-fit, minmax(110px,1fr)); gap:12px; margin-bottom:18px; }
+  .hero-card{
+    border-radius:16px; padding:18px 14px; text-align:center; color:#fff;
+    box-shadow: var(--shadow); position:relative; overflow:hidden;
+    transition: transform .15s ease;
+  }
+  .hero-card:hover{ transform:translateY(-3px) scale(1.02); }
+  .hero-card .emoji{ font-size:30px; line-height:1; margin-bottom:6px; filter:drop-shadow(0 2px 2px rgba(0,0,0,0.25)); }
+  .hero-card .num{ font-family:'IBM Plex Mono',monospace; font-size:26px; font-weight:700; line-height:1; }
+  .hero-card .lbl{ font-size:11.5px; font-weight:700; letter-spacing:0.5px; margin-top:4px; opacity:0.9; text-transform:uppercase; }
+  .hero-card.total{ background:linear-gradient(135deg,#16305C,#2A6BA8); }
+  .hero-card.gold{ background:linear-gradient(135deg,#9C6E00,#F0A500); }
+  .hero-card.silver{ background:linear-gradient(135deg,#77858E,#C4D0D6); color:#20282d; }
+  .hero-card.bronze{ background:linear-gradient(135deg,#5C2F10,#8B4A1F); }
+  .hero-card.pending{ background:linear-gradient(135deg,#6B7278,#9AA3AA); }
+  .hero-card.clickable{ cursor:pointer; }
+  .hero-card.clickable:focus-visible{ outline:2px solid #fff; outline-offset:2px; }
+  @media (max-width:620px){ .hero-trophy{ grid-template-columns:repeat(2,1fr); } }
+
+  /* Donut chart */
+  .donut-wrap{ display:flex; align-items:center; gap:24px; flex-wrap:wrap; padding:6px 0 4px; }
+  .donut{ width:150px; height:150px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:var(--shadow); }
+  .donut-hole{ width:96px; height:96px; background:#fff; border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .donut-total{ font-family:'IBM Plex Mono',monospace; font-size:24px; font-weight:700; color:var(--ink); }
+  .donut-sub{ font-size:10px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.5px; font-weight:700; }
+  .donut-legend{ display:flex; flex-direction:column; gap:8px; }
+  .donut-legend-item{ display:flex; align-items:center; gap:8px; font-size:13.5px; }
+  .donut-dot{ width:12px; height:12px; border-radius:50%; flex-shrink:0; }
+  .donut-legend-item .dl-count{ font-family:'IBM Plex Mono',monospace; font-weight:700; margin-left:auto; padding-left:16px; }
+
+  /* Level bars — grouped per-medal rows so gold/silver/bronze never blend */
+  .level-group{ margin-bottom:18px; padding-bottom:14px; border-bottom:1px solid #EEF0EC; }
+  .level-group:last-child{ border-bottom:none; margin-bottom:0; padding-bottom:0; }
+  .level-group-head{ display:flex; justify-content:space-between; font-size:13.5px; font-weight:700; margin-bottom:8px; }
+  .level-group-head .lvl-total{ font-family:'IBM Plex Mono',monospace; font-weight:600; color:var(--ink-soft); font-size:12px; }
+  .mini-bar-row{ display:flex; align-items:center; gap:8px; margin-bottom:5px; }
+  .mini-bar-row .mini-label{ width:22px; font-size:14px; text-align:center; flex-shrink:0; }
+  .mini-track{ flex:1; height:12px; border-radius:6px; background:#EEF0EC; overflow:hidden; }
+  .mini-fill{ height:100%; border-radius:6px; transition:width .3s ease; }
+  .mini-fill.gold{ background:linear-gradient(90deg,#FFD866,var(--gold)); }
+  .mini-fill.silver{ background:linear-gradient(90deg,#DCE4E8,var(--silver)); }
+  .mini-fill.bronze{ background:linear-gradient(90deg,#C97A42,var(--bronze)); }
+  .mini-fill.otherseg{ background:linear-gradient(90deg,#7fc4b6,var(--teal)); }
+  .mini-bar-row .mini-count{ width:22px; text-align:right; font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:700; flex-shrink:0; }
+
+  /* Dashboard grouping menu */
+  .dash-subnav{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
+  .dash-subnav-btn{
+    padding:8px 14px; border-radius:20px; border:1.5px solid #DCE3EA; background:#fff;
+    font-family:inherit; font-size:12.5px; font-weight:600; color:var(--ink-soft); cursor:pointer;
+    transition: all .15s ease;
+  }
+  .dash-subnav-btn:hover{ border-color:var(--navy); color:var(--navy); }
+  .dash-subnav-btn.active{ background:var(--navy); color:#fff; border-color:var(--navy); }
+  .dash-view-panel{ display:none; }
+  .dash-view-panel.active{ display:block; animation: fadein .18s ease; }
+  .pending-card{ border:1.5px dashed #C9CFC6; background:#FBFCFA; }
+  .pending-list{ display:flex; flex-direction:column; }
+  .pending-item{ font-size:13px; padding:8px 2px; border-bottom:1px dashed #EEF0EC; color:var(--ink-soft); }
+  .pending-item:last-child{ border-bottom:none; }
+  .pending-item b{ color:var(--ink); font-weight:600; }
+
+  /* Award summary (dashboard) */
+  .award-summary-card{ margin-bottom:16px; padding-bottom:14px; border-bottom:1px solid #EEF0EC; }
+  .award-summary-card:last-child{ border-bottom:none; margin-bottom:0; padding-bottom:0; }
+  .award-summary-head{ font-weight:700; font-size:14px; font-family:'Fraunces',serif; }
+  .award-summary-org{ font-size:12px; color:var(--navy); font-weight:600; margin-bottom:8px; }
+  .award-summary-item{ font-size:12.5px; padding:5px 0; display:flex; justify-content:space-between; gap:8px; color:var(--ink-soft); }
+  .award-summary-item b{ color:var(--ink); font-weight:600; }
+  .award-summary-empty{ font-size:12.5px; color:var(--ink-soft); font-style:italic; }
+  .submit-yes{ color:var(--teal); font-weight:700; }
+  .submit-no{ color:var(--amber); font-weight:700; }
+
+  /* Storage status */
+  .storage-status{ font-size:12px; padding:9px 14px; border-radius:10px; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+  .storage-status.ok{ background:var(--teal-soft); color:#154b41; }
+  .storage-status.bad{ background:var(--red-soft); color:#7a2323; }
+  .storage-status.checking{ background:#EEF0EC; color:var(--ink-soft); }
+
+  /* Subject grid */
+  .subject-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; }
+  .subject-card{
+    border-radius:14px; padding:14px; text-align:center;
+    border:1.5px solid #EEF0EC; background:#FBFCFB;
+  }
+  .subject-card .s-emoji{ font-size:26px; }
+  .subject-card .s-name{ font-weight:700; font-size:13.5px; margin:6px 0 8px; }
+  .subject-card .s-medals{ display:flex; justify-content:center; gap:6px; flex-wrap:wrap; font-size:12px; font-family:'IBM Plex Mono',monospace; }
+  .subject-card .s-medals span{ padding:2px 7px; border-radius:20px; font-weight:700; }
+  .subject-card .s-total{ margin-top:8px; font-size:11px; color:var(--ink-soft); font-weight:600; }
+
+  .overlay{
+    display:none; position:fixed; inset:0; background:rgba(15,25,40,0.5);
+    align-items:flex-start; justify-content:center; padding:30px 16px; z-index:50; overflow-y:auto;
+  }
+  .overlay.active{display:flex;}
+  .modal{
+    background:var(--white); border-radius:16px; max-width:520px; width:100%;
+    padding:22px; box-shadow:0 20px 60px rgba(0,0,0,0.25); margin-bottom:30px;
+  }
+  .modal h3{font-family:'Fraunces',serif; margin:0 0 16px; font-size:19px;}
+  .field{margin-bottom:13px;}
+  .field label{display:block; font-size:12.5px; font-weight:600; color:var(--ink-soft); margin-bottom:5px;}
+  .field input[type=text], .field input[type=date], .field input[type=email], .field select, .field textarea{
+    width:100%; padding:9px 11px; border-radius:8px; border:1.5px solid #DCE3EA;
+    font-family:inherit; font-size:14px; color:var(--ink); background:#FBFCFB;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{outline:2px solid var(--navy); outline-offset:1px;}
+  .two-col{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .prog-check-list{max-height:220px; overflow-y:auto; border:1.5px solid #EEF0EC; border-radius:9px; padding:8px;}
+  .prog-check-item{display:flex; align-items:flex-start; gap:8px; padding:6px 4px; font-size:13.5px;}
+  .prog-check-item input{width:16px;height:16px; margin-top:2px;}
+  .prog-check-item.ineligible{ opacity:0.55; }
+  .ineligible-note{ font-size:11px; color:var(--red); font-style:italic; display:block; }
+  .modal-actions{display:flex; justify-content:flex-end; gap:8px; margin-top:18px;}
+
+  @media (max-width:560px){
+    .two-col{grid-template-columns:1fr;}
+    .record-row{grid-template-columns:1fr;}
+    .row-actions{justify-content:flex-start;}
+    .deadline-item{flex-direction:column; align-items:stretch;}
+    .deadline-right{align-items:stretch;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <h1>PAUL's Achievement Tracker</h1>
+    <div class="sub">Every competition, every medal, every award your kids can apply for — Math, Robotics, English, Science and beyond.</div>
+    <div class="medal-shelf" id="medalShelf"></div>
+  </header>
+
+  <nav class="tabs">
+    <button data-tab="dashboard" class="active">Dashboard</button>
+    <button data-tab="records">Records</button>
+    <button data-tab="programs">Awards</button>
+    <button data-tab="deadlines">Reminders <span class="badge" id="deadlineBadge" style="display:none;"></span></button>
+  </nav>
+
+  <div class="storage-status checking" id="storageStatus">Checking auto-save status…</div>
+  <div class="storage-status" style="background:var(--blue-soft); color:#1a4a72;">🔗 This data is shared — anyone with this link can view, add, edit, and delete records and awards.</div>
+
+  <div class="backup-bar">
+    <div class="backup-note">💾 Back up your data to a file, or restore from a previous backup</div>
+    <div class="backup-actions">
+      <button class="btn ghost small" id="exportBtn">⬇ Export backup</button>
+      <button class="btn ghost small" id="importBtn">⬆ Import backup</button>
+      <input type="file" id="importFile" accept="application/json" style="display:none;">
+    </div>
+  </div>
+
+  <!-- DASHBOARD TAB -->
+  <div class="panel active" id="panel-dashboard">
+    <div class="toolbar">
+      <div>
+        <h2>🏆 Your Trophy Collection</h2>
+        <div class="hint">Every medal you've won, by grade and by subject — results still pending are not counted here</div>
+      </div>
+    </div>
+
+    <div class="hero-trophy" id="heroTrophy"></div>
+
+    <div class="card">
+      <div class="section-title">🍩 Overall Medal Split</div>
+      <div id="donutChart"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">📊 Explore Your Results</div>
+      <div class="dash-subnav" id="dashSubnav">
+        <button class="dash-subnav-btn active" data-panel="level">🎯 By Level</button>
+        <button class="dash-subnav-btn" data-panel="subject">🌈 By Subject</button>
+        <button class="dash-subnav-btn" data-panel="year">📅 By Year</button>
+        <button class="dash-subnav-btn" data-panel="award">🎖️ By Award</button>
+        <button class="dash-subnav-btn" data-panel="pending">⏳ Pending</button>
+      </div>
+      <div class="dash-view-panel active" data-panel="level"><div id="levelBars"></div></div>
+      <div class="dash-view-panel" data-panel="subject"><div id="subjectGrid"></div></div>
+      <div class="dash-view-panel" data-panel="year"><div id="yearGroups"></div></div>
+      <div class="dash-view-panel" data-panel="award"><div id="awardSummary"></div></div>
+      <div class="dash-view-panel" data-panel="pending"><div id="pendingSection"></div></div>
+    </div>
+  </div>
+
+  <!-- RECORDS TAB -->
+  <div class="panel" id="panel-records">
+    <div class="toolbar">
+      <div>
+        <h2>Competition Records</h2>
+        <div class="hint">Every competition entered so far</div>
+      </div>
+      <button class="btn" id="addRecordBtn">+ Add Record</button>
+    </div>
+    <div class="filter-toggle" style="flex-wrap:wrap; gap:16px;">
+      <span style="display:flex; align-items:center; gap:8px;">
+        <label for="subjectFilter" style="margin:0;">Subject:</label>
+        <select id="subjectFilter">
+          <option value="">All subjects</option>
+        </select>
+      </span>
+      <span style="display:flex; align-items:center; gap:8px;">
+        <label for="resultFilter" style="margin:0;">Medal:</label>
+        <select id="resultFilter">
+          <option value="">All medals</option>
+          <option value="Gold">🥇 Gold</option>
+          <option value="Silver">🥈 Silver</option>
+          <option value="Bronze">🥉 Bronze</option>
+          <option value="Other">⭐ Other</option>
+          <option value="Pending">⏳ Pending</option>
+        </select>
+      </span>
+      <span style="display:flex; align-items:center; gap:8px;">
+        <label for="yearFilter" style="margin:0;">Year:</label>
+        <select id="yearFilter">
+          <option value="">All years</option>
+        </select>
+      </span>
+    </div>
+    <div id="recordsList"></div>
+  </div>
+
+  <!-- PROGRAMS TAB -->
+  <div class="panel" id="panel-programs">
+    <div class="toolbar">
+      <div>
+        <h2>Awards / Organizations</h2>
+        <div class="hint">Define the organization, award name, and the eligibility &amp; application windows, then link them to records</div>
+      </div>
+      <button class="btn" id="addProgramBtn">+ Add Award</button>
+    </div>
+    <div id="programsList"></div>
+  </div>
+
+  <!-- DEADLINES TAB -->
+  <div class="panel" id="panel-deadlines">
+    <div class="toolbar">
+      <div>
+        <h2>Reminders</h2>
+        <div class="hint">Applications opening soon, and applications closing soon</div>
+      </div>
+    </div>
+    <div class="note-box">
+      <b>About email reminders:</b> this app runs entirely in your browser and has no server, so it cannot send scheduled emails on its own while the tab is closed. Instead, whenever an award's application window is about to <b>open</b> (within 3 days), you'll see it flagged below with one-click buttons to <b>email a reminder to ha.lhing@gmail.com</b> or <b>add it to Google Calendar</b> (which can send you its own email/notification reminders).
+    </div>
+    <div class="filter-toggle">
+      <input type="checkbox" id="showSubmittedToggle">
+      <label for="showSubmittedToggle">Also show items already submitted</label>
+    </div>
+    <div class="filter-toggle">
+      <input type="checkbox" id="showAllToggle">
+      <label for="showAllToggle">Show everything (including items more than 15 days away)</label>
+    </div>
+
+    <div class="section-title">Applications Opening Soon</div>
+    <div class="hint" style="margin:-8px 0 12px;">Grouped by award — each award is listed once with all its eligible results underneath</div>
+    <div id="openingList"></div>
+
+    <div class="section-title">Applications Closing Soon</div>
+    <div class="hint" style="margin:-8px 0 12px;">Grouped by award — each award is listed once with all its eligible results underneath</div>
+    <div id="deadlinesList"></div>
+  </div>
+
+  <div style="text-align:center; font-size:11px; color:var(--ink-soft); padding:16px 0 4px; font-family:'IBM Plex Mono',monospace;">
+    App version: 2026-07-07 · v12 (wider detail drill-down popup)
+  </div>
+
+</div>
+
+<!-- RECORD MODAL -->
+<div class="overlay" id="recordOverlay">
+  <div class="modal">
+    <h3 id="recordModalTitle">Add Record</h3>
+    <input type="hidden" id="recordId">
+
+    <div class="two-col">
+      <div class="field">
+        <label>Subject</label>
+        <select id="f_subject">
+          <option value="Math">Math</option>
+          <option value="Robotics">Robotics</option>
+          <option value="English">English</option>
+          <option value="Science">Science</option>
+          <option value="Other">Other (type below)</option>
+        </select>
+      </div>
+      <div class="field" id="f_subjectCustomWrap" style="display:none;">
+        <label>Specify subject</label>
+        <input type="text" id="f_subjectCustom" placeholder="e.g. Art, Music">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Competition name</label>
+      <input type="text" id="f_exam" placeholder="e.g. HKIMO Heat, Kangaroo Math" oninput="onExamNameChange()">
+    </div>
+
+    <div class="two-col">
+      <div class="field">
+        <label>Type</label>
+        <select id="f_type">
+          <option value="Thailand">Thailand</option>
+          <option value="International">International</option>
+          <option value="Both TH and International">Both TH and International</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Grade level</label>
+        <select id="f_level"></select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Exam date</label>
+      <input type="date" id="f_examDate">
+    </div>
+
+    <div class="field">
+      <label>Result</label>
+      <select id="f_result">
+        <option value="">— Not announced yet —</option>
+        <option value="Gold">Gold</option>
+        <option value="Silver">Silver</option>
+        <option value="Bronze">Bronze</option>
+        <option value="Other">Other certificate / honor</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>This result can be used to apply for</label>
+      <div class="hint" style="margin-bottom:6px;">Only awards whose eligible period includes the exam date, and whose eligible type matches, can be selected.</div>
+      <div class="prog-check-list" id="progCheckList"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="cancelRecordBtn">Cancel</button>
+      <button class="btn" id="saveRecordBtn">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROGRAM MODAL -->
+<div class="overlay" id="programOverlay">
+  <div class="modal">
+    <h3 id="programModalTitle">Add Award / Organization</h3>
+    <input type="hidden" id="programId">
+    <div class="field">
+      <label>Award name</label>
+      <input type="text" id="p_name" placeholder="e.g. Youth Who Bring Honor to the Nation">
+    </div>
+    <div class="two-col">
+      <div class="field">
+        <label>Organization</label>
+        <input type="text" id="p_org" placeholder="e.g. Ministry of Education">
+      </div>
+      <div class="field">
+        <label>Award year (B.E.)</label>
+        <select id="p_year"></select>
+      </div>
+    </div>
+    <div class="field"><label>Eligible result period (exam date must fall within this range)</label></div>
+    <div class="two-col">
+      <div class="field"><label>From</label><input type="date" id="p_periodStart"></div>
+      <div class="field"><label>To</label><input type="date" id="p_periodEnd"></div>
+    </div>
+    <div class="field">
+      <label>Eligible type</label>
+      <select id="p_eligibleType">
+        <option value="Thailand">Thailand</option>
+        <option value="International">International</option>
+        <option value="Both TH and International">Both TH and International</option>
+      </select>
+    </div>
+    <div class="field"><label>Application window</label></div>
+    <div class="two-col">
+      <div class="field"><label>Opens</label><input type="date" id="p_applyStart"></div>
+      <div class="field"><label>Closes</label><input type="date" id="p_applyEnd"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="cancelProgramBtn">Cancel</button>
+      <button class="btn" id="saveProgramBtn">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- GENERIC CONFIRM/ALERT MODAL (replaces native browser confirm()/alert(), which can be silently blocked inside the artifact sandbox) -->
+<div class="overlay" id="genericOverlay">
+  <div class="modal" style="max-width:420px;">
+    <div id="genericModalMessage" style="font-size:14px; margin-bottom:18px; white-space:pre-wrap; line-height:1.5;"></div>
+    <div class="modal-actions" id="genericModalActions"></div>
+  </div>
+</div>
+
+<!-- DETAIL DRILL-DOWN MODAL (click Gold/Silver/Bronze/Pending to see which records they came from) -->
+<div class="overlay" id="detailOverlay">
+  <div class="modal" style="max-width:680px; width:min(680px, 94vw);">
+    <h3 id="detailModalTitle">Details</h3>
+    <div id="detailModalList"></div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="closeDetailBtn">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const STORAGE_KEYS = { programs:'programs', records:'records' };
+  const REMINDER_EMAIL = 'ha.lhing@gmail.com';
+  let programs = [];
+  let records = [];
+
+  const GENERIC_LEVELS = ['Kindergarten','Primary 1','Primary 2','Primary 3','Primary 4','Primary 5','Primary 6',
+    'Secondary 1','Secondary 2','Secondary 3','Secondary 4','Secondary 5','Secondary 6'];
+  const KANGAROO_LEVELS = ['Pre-Ecolier (Primary 1-2)','Ecolier (Primary 3-4)','Benjamin (Primary 5-6)',
+    'Cadet (Secondary 1-2)','Junior (Secondary 3-4)','Student (Secondary 5-6)'];
+  const LEVEL_ORDER = [...GENERIC_LEVELS, ...KANGAROO_LEVELS];
+  const SUBJECT_ORDER = ['Math','Robotics','English','Science','Other'];
+
+  function uid(){ return 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,8); }
+  function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  /* ---------- Custom alert/confirm modal (native confirm()/alert() can be silently blocked in the artifact sandbox) ---------- */
+  function showAlert(message){
+    return new Promise(resolve=>{
+      const overlay = document.getElementById('genericOverlay');
+      document.getElementById('genericModalMessage').textContent = message;
+      const actions = document.getElementById('genericModalActions');
+      actions.innerHTML = '';
+      const okBtn = document.createElement('button');
+      okBtn.className = 'btn'; okBtn.textContent = 'OK';
+      okBtn.onclick = ()=>{ overlay.classList.remove('active'); resolve(); };
+      actions.appendChild(okBtn);
+      overlay.classList.add('active');
+    });
+  }
+  function showConfirm(message){
+    return new Promise(resolve=>{
+      const overlay = document.getElementById('genericOverlay');
+      document.getElementById('genericModalMessage').textContent = message;
+      const actions = document.getElementById('genericModalActions');
+      actions.innerHTML = '';
+      const cancelBtn = document.createElement('button');
+      cancelBtn.className = 'btn ghost'; cancelBtn.textContent = 'Cancel';
+      cancelBtn.onclick = ()=>{ overlay.classList.remove('active'); resolve(false); };
+      const okBtn = document.createElement('button');
+      okBtn.className = 'btn'; okBtn.textContent = 'Confirm';
+      okBtn.onclick = ()=>{ overlay.classList.remove('active'); resolve(true); };
+      actions.appendChild(cancelBtn); actions.appendChild(okBtn);
+      overlay.classList.add('active');
+    });
+  }
+
+  async function checkStorageHealth(){
+    const el = document.getElementById('storageStatus');
+    try{
+      const testKey = '__health_check__';
+      const testVal = String(Date.now());
+      await window.storage.set(testKey, testVal, true);
+      const readBack = await window.storage.get(testKey, true);
+      if(readBack && readBack.value === testVal){
+        el.className = 'storage-status ok';
+        el.textContent = '✅ Auto-save is working — your data will still be here next time you open this exact link.';
+      } else {
+        throw new Error('readback mismatch');
+      }
+    }catch(e){
+      el.className = 'storage-status bad';
+      el.textContent = '⚠️ Auto-save is NOT working right now — this usually means the artifact isn\'t published yet, or your Claude plan doesn\'t include persistent storage (Pro/Max/Team/Enterprise required). Please use "Export backup" below after entering data until this is resolved.';
+    }
+  }
+
+  async function loadAll(){
+    try{ const p = await window.storage.get(STORAGE_KEYS.programs, true); programs = p ? JSON.parse(p.value) : []; }
+    catch(e){ programs = []; }
+    try{ const r = await window.storage.get(STORAGE_KEYS.records, true); records = r ? JSON.parse(r.value) : []; }
+    catch(e){ records = []; }
+    renderAll();
+    checkStorageHealth();
+  }
+  async function savePrograms(){ try{ await window.storage.set(STORAGE_KEYS.programs, JSON.stringify(programs), true); }catch(e){ console.error(e); await showAlert('Could not save — your changes may not persist. Please try exporting a backup right away.'); } }
+  async function saveRecords(){ try{ await window.storage.set(STORAGE_KEYS.records, JSON.stringify(records), true); }catch(e){ console.error(e); await showAlert('Could not save — your changes may not persist. Please try exporting a backup right away.'); } }
+
+  document.getElementById('exportBtn').addEventListener('click', ()=>{
+    const data = JSON.stringify({ exportedAt: new Date().toISOString(), programs, records }, null, 2);
+    const blob = new Blob([data], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'achievement-tracker-backup-' + new Date().toISOString().slice(0,10) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+  document.getElementById('importBtn').addEventListener('click', ()=>{
+    document.getElementById('importFile').click();
+  });
+  document.getElementById('importFile').addEventListener('change', function(e){
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = async function(ev){
+      try{
+        const parsed = JSON.parse(ev.target.result);
+        if(!Array.isArray(parsed.programs) || !Array.isArray(parsed.records)){
+          await showAlert('This file does not look like a valid backup from this app.');
+          return;
+        }
+        const ok = await showConfirm('This will replace all data currently in the app with the contents of this backup file. Continue?');
+        if(!ok) return;
+        programs = parsed.programs;
+        records = parsed.records;
+        await savePrograms();
+        await saveRecords();
+        renderAll();
+        await showAlert('Backup restored.');
+      }catch(err){
+        await showAlert('Could not read this file. Please make sure it is a valid backup file exported from this app.');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  });
+
+  function fmtDate(iso){
+    if(!iso) return '—';
+    const d = new Date(iso + 'T00:00:00');
+    if(isNaN(d)) return iso;
+    return new Intl.DateTimeFormat('en-GB', {year:'numeric', month:'short', day:'numeric'}).format(d);
+  }
+  function daysUntil(iso){
+    if(!iso) return null;
+    const today = new Date(); today.setHours(0,0,0,0);
+    const target = new Date(iso + 'T00:00:00');
+    return Math.round((target - today) / 86400000);
+  }
+
+  /* ---------- effective field helpers ---------- */
+  function effSubject(r){ return r.subject==='Other' ? (r.subjectCustom||'Other') : r.subject; }
+  function subjectTagClass(subj){
+    const s = (subj||'').toLowerCase();
+    if(s==='math') return 'subject-tag math';
+    if(s==='robotics') return 'subject-tag robotics';
+    if(s==='english') return 'subject-tag english';
+    if(s==='science') return 'subject-tag science';
+    return 'subject-tag othersubj';
+  }
+  const TYPE_OPTIONS = ['Thailand','International','Both TH and International'];
+  function effType(r){
+    if(!r) return 'Thailand';
+    if(TYPE_OPTIONS.includes(r.type)) return r.type;
+    if(r.type==='Inter') return 'International';
+    if(r.type==='TH') return 'Thailand';
+    return 'Both TH and International'; // legacy "Other" custom types default to the most permissive bucket
+  }
+  function chipClass(result){
+    if(result==='Gold') return 'chip gold';
+    if(result==='Silver') return 'chip silver';
+    if(result==='Bronze') return 'chip bronze';
+    if(result==='Other') return 'chip other';
+    return 'chip none';
+  }
+  function chipLabel(result){ return result ? result : 'Pending'; }
+
+  /* ---------- TABS ---------- */
+  document.querySelectorAll('nav.tabs button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  /* ---------- DASHBOARD GROUPING MENU ---------- */
+  document.querySelectorAll('.dash-subnav-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.dash-subnav-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.dash-view-panel').forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelector(`.dash-view-panel[data-panel="${btn.dataset.panel}"]`).classList.add('active');
+    });
+  });
+
+  /* ---------- MEDAL SHELF (overall) ---------- */
+  function renderMedalShelf(){
+    const counts = {Gold:0, Silver:0, Bronze:0};
+    records.forEach(r=>{ if(counts[r.result] !== undefined) counts[r.result]++; });
+    document.getElementById('medalShelf').innerHTML = `
+      <div class="medal gold"><div class="dot">${counts.Gold}</div><div><div class="count">${counts.Gold}</div><div class="label">GOLD</div></div></div>
+      <div class="medal silver"><div class="dot">${counts.Silver}</div><div><div class="count">${counts.Silver}</div><div class="label">SILVER</div></div></div>
+      <div class="medal bronze"><div class="dot">${counts.Bronze}</div><div><div class="count">${counts.Bronze}</div><div class="label">BRONZE</div></div></div>
+    `;
+  }
+
+  /* ---------- DASHBOARD ---------- */
+  function buildCountRow(items){
+    const c = {Gold:0, Silver:0, Bronze:0, Other:0, Total:0};
+    items.forEach(r=>{
+      if(!r.result) return; // skip records with no result yet — not counted on the dashboard
+      if(r.result==='Gold') c.Gold++;
+      else if(r.result==='Silver') c.Silver++;
+      else if(r.result==='Bronze') c.Bronze++;
+      else if(r.result==='Other') c.Other++;
+      c.Total++;
+    });
+    return c;
+  }
+  const SUBJECT_EMOJI = { Math:'🧮', Robotics:'🤖', English:'🔤', Science:'🔬' };
+  function subjectEmoji(name){ return SUBJECT_EMOJI[name] || '⭐'; }
+
+  function renderHeroTrophy(){
+    const el = document.getElementById('heroTrophy');
+    const c = buildCountRow(records);
+    const pendingCount = records.filter(r=>!r.result).length;
+    el.innerHTML = `
+      <div class="hero-card total"><div class="emoji">🏆</div><div class="num">${c.Total}</div><div class="lbl">Total Trophies</div></div>
+      <div class="hero-card gold clickable" onclick="openDetailModal('Gold')"><div class="emoji">🥇</div><div class="num">${c.Gold}</div><div class="lbl">Gold</div></div>
+      <div class="hero-card silver clickable" onclick="openDetailModal('Silver')"><div class="emoji">🥈</div><div class="num">${c.Silver}</div><div class="lbl">Silver</div></div>
+      <div class="hero-card bronze clickable" onclick="openDetailModal('Bronze')"><div class="emoji">🥉</div><div class="num">${c.Bronze}</div><div class="lbl">Bronze</div></div>
+      <div class="hero-card pending clickable" onclick="openDetailModal('Pending')"><div class="emoji">⏳</div><div class="num">${pendingCount}</div><div class="lbl">Pending</div></div>
+    `;
+  }
+
+  window.openDetailModal = function(type){
+    const titles = {
+      Gold: '🥇 Gold Medal Results',
+      Silver: '🥈 Silver Medal Results',
+      Bronze: '🥉 Bronze Medal Results',
+      Other: '⭐ Other Certificates / Honors',
+      Pending: '⏳ Awaiting Results'
+    };
+    document.getElementById('detailModalTitle').textContent = titles[type] || 'Details';
+    const items = type==='Pending' ? records.filter(r=>!r.result) : records.filter(r=>r.result===type);
+    const sorted = [...items].sort((a,b)=>(b.examDate||'').localeCompare(a.examDate||''));
+    const listEl = document.getElementById('detailModalList');
+    if(sorted.length===0){
+      listEl.innerHTML = '<div class="award-summary-empty">No records in this category yet.</div>';
+    } else {
+      listEl.innerHTML = `<div class="linked-records">` + sorted.map(r=>`
+        <div class="linked-record-row">
+          <span><span class="${subjectTagClass(effSubject(r))}" style="margin-right:6px;">${escapeHtml(effSubject(r))}</span><b>${escapeHtml(r.exam)}</b> — ${escapeHtml(r.level||'—')} · ${fmtDate(r.examDate)}</span>
+        </div>`).join('') + `</div>`;
+    }
+    document.getElementById('detailOverlay').classList.add('active');
+  };
+  document.getElementById('closeDetailBtn').addEventListener('click', ()=>{
+    document.getElementById('detailOverlay').classList.remove('active');
+  });
+
+  function renderDonutChart(){
+    const el = document.getElementById('donutChart');
+    const c = buildCountRow(records);
+    if(c.Total===0){
+      el.innerHTML = '<div style="font-size:13px;color:var(--ink-soft);padding:8px 0;">No results announced yet — this chart will fill in once results come in!</div>';
+      return;
+    }
+    const goldPct = c.Gold/c.Total*100;
+    const silverPct = c.Silver/c.Total*100;
+    const bronzePct = c.Bronze/c.Total*100;
+    const otherPct = c.Other/c.Total*100;
+    let acc = 0;
+    const stops = [];
+    if(c.Gold>0){ stops.push(`var(--gold) ${acc}% ${acc+goldPct}%`); acc+=goldPct; }
+    if(c.Silver>0){ stops.push(`var(--silver) ${acc}% ${acc+silverPct}%`); acc+=silverPct; }
+    if(c.Bronze>0){ stops.push(`var(--bronze) ${acc}% ${acc+bronzePct}%`); acc+=bronzePct; }
+    if(c.Other>0){ stops.push(`var(--teal) ${acc}% ${acc+otherPct}%`); acc+=otherPct; }
+    el.innerHTML = `
+      <div class="donut-wrap">
+        <div class="donut" style="background:conic-gradient(${stops.join(',')});">
+          <div class="donut-hole"><div class="donut-total">${c.Total}</div><div class="donut-sub">Total</div></div>
+        </div>
+        <div class="donut-legend">
+          ${c.Gold>0?`<div class="donut-legend-item" style="cursor:pointer;" onclick="openDetailModal('Gold')"><span class="donut-dot" style="background:var(--gold);"></span>🥇 Gold<span class="dl-count">${c.Gold}</span></div>`:''}
+          ${c.Silver>0?`<div class="donut-legend-item" style="cursor:pointer;" onclick="openDetailModal('Silver')"><span class="donut-dot" style="background:var(--silver);"></span>🥈 Silver<span class="dl-count">${c.Silver}</span></div>`:''}
+          ${c.Bronze>0?`<div class="donut-legend-item" style="cursor:pointer;" onclick="openDetailModal('Bronze')"><span class="donut-dot" style="background:var(--bronze);"></span>🥉 Bronze<span class="dl-count">${c.Bronze}</span></div>`:''}
+          ${c.Other>0?`<div class="donut-legend-item" style="cursor:pointer;" onclick="openDetailModal('Other')"><span class="donut-dot" style="background:var(--teal);"></span>⭐ Other<span class="dl-count">${c.Other}</span></div>`:''}
+        </div>
+      </div>`;
+  }
+
+  function renderLevelBars(){
+    const el = document.getElementById('levelBars');
+    if(records.length===0){ el.innerHTML = '<div style="font-size:13px;color:var(--ink-soft);padding:8px 0;">No records yet — add your first competition to see it here!</div>'; return; }
+    const levels = [...new Set(records.map(r=>r.level).filter(Boolean))];
+    levels.sort((a,b)=>{
+      const ia = LEVEL_ORDER.indexOf(a), ib = LEVEL_ORDER.indexOf(b);
+      if(ia===-1 && ib===-1) return a.localeCompare(b);
+      if(ia===-1) return 1;
+      if(ib===-1) return -1;
+      return ia-ib;
+    });
+    const rows = levels.map(lv=>{
+      const c = buildCountRow(records.filter(r=>r.level===lv));
+      if(c.Total===0) return '';
+      const maxCount = Math.max(c.Gold, c.Silver, c.Bronze, c.Other, 1);
+      const lines = [];
+      lines.push(`<div class="mini-bar-row"><span class="mini-label">🥇</span><div class="mini-track"><div class="mini-fill gold" style="width:${c.Gold/maxCount*100}%"></div></div><span class="mini-count">${c.Gold}</span></div>`);
+      lines.push(`<div class="mini-bar-row"><span class="mini-label">🥈</span><div class="mini-track"><div class="mini-fill silver" style="width:${c.Silver/maxCount*100}%"></div></div><span class="mini-count">${c.Silver}</span></div>`);
+      lines.push(`<div class="mini-bar-row"><span class="mini-label">🥉</span><div class="mini-track"><div class="mini-fill bronze" style="width:${c.Bronze/maxCount*100}%"></div></div><span class="mini-count">${c.Bronze}</span></div>`);
+      if(c.Other>0) lines.push(`<div class="mini-bar-row"><span class="mini-label">⭐</span><div class="mini-track"><div class="mini-fill otherseg" style="width:${c.Other/maxCount*100}%"></div></div><span class="mini-count">${c.Other}</span></div>`);
+      return `
+      <div class="level-group">
+        <div class="level-group-head"><span>${escapeHtml(lv)}</span><span class="lvl-total">${c.Total} trophy${c.Total!==1?'ies':''}</span></div>
+        ${lines.join('')}
+      </div>`;
+    }).join('');
+    el.innerHTML = rows || '<div style="font-size:13px;color:var(--ink-soft);padding:8px 0;">No results announced yet — this will fill in once results come in!</div>';
+  }
+
+  function renderPendingSection(){
+    const el = document.getElementById('pendingSection');
+    const pending = records.filter(r=>!r.result);
+    if(pending.length===0){
+      el.innerHTML = '<div style="font-size:13px;color:var(--ink-soft);padding:8px 0;">🎉 Nothing waiting — every competition has an announced result.</div>';
+      return;
+    }
+    const sorted = [...pending].sort((a,b)=>(b.examDate||'').localeCompare(a.examDate||''));
+    el.innerHTML = `
+      <div class="pending-list">
+        ${sorted.map(r=>`<div class="pending-item"><b>${escapeHtml(r.exam)}</b> — ${escapeHtml(effSubject(r))} · ${escapeHtml(r.level||'—')} · ${fmtDate(r.examDate)}</div>`).join('')}
+      </div>`;
+  }
+
+  function countsWithPending(items){
+    const c = {Gold:0, Silver:0, Bronze:0, Other:0, Pending:0};
+    items.forEach(r=>{
+      if(!r.result) c.Pending++;
+      else if(r.result==='Gold') c.Gold++;
+      else if(r.result==='Silver') c.Silver++;
+      else if(r.result==='Bronze') c.Bronze++;
+      else if(r.result==='Other') c.Other++;
+    });
+    return c;
+  }
+  function examYearLabel(adYear){
+    const beYear = adYear + 543;
+    return `${adYear} (${beYear})`;
+  }
+  function renderYearGroups(){
+    const el = document.getElementById('yearGroups');
+    if(records.length===0){ el.innerHTML = '<div style="font-size:13px;color:var(--ink-soft);padding:8px 0;">No records yet.</div>'; return; }
+    const withDates = records.filter(r=>r.examDate);
+    const withoutDates = records.filter(r=>!r.examDate);
+    const years = [...new Set(withDates.map(r=>parseInt(r.examDate.slice(0,4),10)))].sort((a,b)=>b-a);
+
+    let html = years.map(y=>{
+      const items = withDates.filter(r=>parseInt(r.examDate.slice(0,4),10)===y);
+      const c = countsWithPending(items);
+      const maxCount = Math.max(c.Gold, c.Silver, c.Bronze, c.Other, c.Pending, 1);
+      const lines = [];
+      lines.push(`<div class="mini-bar-row"><span class="mini-label">🥇</span><div class="mini-track"><div class="mini-fill gold" style="width:${c.Gold/maxCount*100}%"></div></div><span class="mini-count">${c.Gold}</span></div>`);
+      lines.push(`<div class="mini-bar-row"><span class="mini-label">🥈</span><div class="mini-track"><div class="mini-fill silver" style="width:${c.Silver/maxCount*100}%"></div></div><span class="mini-count">${c.Silver}</span></div>`);
+      lines.push(`<div class="mini-bar-row"><span class="mini-label">🥉</span><div class="mini-track"><div class="mini-fill bronze" style="width:${c.Bronze/maxCount*100}%"></div></div><span class="mini-count">${c.Bronze}</span></div>`);
+      if(c.Other>0) lines.push(`<div class="mini-bar-row"><span class="mini-label">⭐</span><div class="mini-track"><div class="mini-fill otherseg" style="width:${c.Other/maxCount*100}%"></div></div><span class="mini-count">${c.Other}</span></div>`);
+      if(c.Pending>0) lines.push(`<div class="mini-bar-row"><span class="mini-label">⏳</span><div class="mini-track"><div class="mini-fill" style="width:${c.Pending/maxCount*100}%; background:#C9CFC6;"></div></div><span class="mini-count">${c.Pending}</span></div>`);
+      const total = items.length;
+      return `
+      <div class="level-group">
+        <div class="level-group-head"><span>${examYearLabel(y)}</span><span class="lvl-total">${total} ${total!==1?'competitions':'competition'}</span></div>
+        ${lines.join('')}
+      </div>`;
+    }).join('');
+
+    if(withoutDates.length>0){
+      const c = countsWithPending(withoutDates);
+      const maxCount = Math.max(c.Gold, c.Silver, c.Bronze, c.Other, c.Pending, 1);
+      const lines = [];
+      lines.push(`<div class="mini-bar-row"><span class="mini-label">🥇</span><div class="mini-track"><div class="mini-fill gold" style="width:${c.Gold/maxCount*100}%"></div></div><span class="mini-count">${c.Gold}</span></div>`);
+      lines.push(`<div class="mini-bar-row"><span class="mini-label">🥈</span><div class="mini-track"><div class="mini-fill silver" style="width:${c.Silver/maxCount*100}%"></div></div><span class="mini-count">${c.Silver}</span></div>`);
+      lines.push(`<div class="mini-bar-row"><span class="mini-label">🥉</span><div class="mini-track"><div class="mini-fill bronze" style="width:${c.Bronze/maxCount*100}%"></div></div><span class="mini-count">${c.Bronze}</span></div>`);
+      if(c.Other>0) lines.push(`<div class="mini-bar-row"><span class="mini-label">⭐</span><div class="mini-track"><div class="mini-fill otherseg" style="width:${c.Other/maxCount*100}%"></div></div><span class="mini-count">${c.Other}</span></div>`);
+      if(c.Pending>0) lines.push(`<div class="mini-bar-row"><span class="mini-label">⏳</span><div class="mini-track"><div class="mini-fill" style="width:${c.Pending/maxCount*100}%; background:#C9CFC6;"></div></div><span class="mini-count">${c.Pending}</span></div>`);
+      html += `
+      <div class="level-group">
+        <div class="level-group-head"><span>No exam date set</span><span class="lvl-total">${withoutDates.length}</span></div>
+        ${lines.join('')}
+      </div>`;
+    }
+    el.innerHTML = html || '<div style="font-size:13px;color:var(--ink-soft);padding:8px 0;">No records yet.</div>';
+  }
+
+  function renderAwardSummary(){
+    const el = document.getElementById('awardSummary');
+    if(programs.length===0){
+      el.innerHTML = '<div class="award-summary-empty">No awards set up yet — add one in the "Awards" tab.</div>';
+      return;
+    }
+    el.innerHTML = programs.map(p=>{
+      const linked = records.filter(r=>(r.eligibility||[]).some(e=>e.programId===p.id));
+      const items = linked.map(r=>{
+        const elig = (r.eligibility||[]).find(e=>e.programId===p.id);
+        const submitted = elig && elig.submitted;
+        return `<div class="award-summary-item">
+          <span><b>${escapeHtml(r.exam)}</b> — ${chipLabel(r.result)} · ${fmtDate(r.examDate)}</span>
+          <label class="check" style="margin:0;">
+            <input type="checkbox" ${submitted?'checked':''} onchange="toggleSubmitted('${r.id}','${p.id}', this.checked)">
+            <span class="${submitted?'submit-yes':'submit-no'}">${submitted?'✓ Submitted':'Not submitted'}</span>
+          </label>
+        </div>`;
+      }).join('');
+      return `
+      <div class="award-summary-card">
+        <div class="award-summary-head">${escapeHtml(p.name)}</div>
+        <div class="award-summary-org">${escapeHtml(p.org||'')}${p.year?' · B.E. '+escapeHtml(p.year):''}</div>
+        ${linked.length===0 ? '<div class="award-summary-empty">No eligible records linked yet.</div>' : items}
+      </div>`;
+    }).join('');
+  }
+
+
+  function renderSubjectGrid(){
+    const el = document.getElementById('subjectGrid');
+    if(records.length===0){ el.innerHTML = '<div style="font-size:13px;color:var(--ink-soft);padding:8px 0;">No records yet.</div>'; return; }
+    const subs = [...new Set(records.map(effSubject).filter(Boolean))];
+    subs.sort((a,b)=>{
+      const ia = SUBJECT_ORDER.indexOf(a), ib = SUBJECT_ORDER.indexOf(b);
+      if(ia===-1 && ib===-1) return a.localeCompare(b);
+      if(ia===-1) return 1;
+      if(ib===-1) return -1;
+      return ia-ib;
+    });
+    const cardsHtml = subs.map(sub=>{
+      const c = buildCountRow(records.filter(r=>effSubject(r)===sub));
+      if(c.Total===0) return '';
+      return `
+      <div class="subject-card">
+        <div class="s-emoji">${subjectEmoji(sub)}</div>
+        <div class="s-name">${escapeHtml(sub)}</div>
+        <div class="s-medals">
+          ${c.Gold>0?`<span style="background:var(--gold-soft);color:#7a5c14;">🥇 ${c.Gold}</span>`:''}
+          ${c.Silver>0?`<span style="background:var(--silver-soft);color:#3f4d57;">🥈 ${c.Silver}</span>`:''}
+          ${c.Bronze>0?`<span style="background:var(--bronze-soft);color:#7a441a;">🥉 ${c.Bronze}</span>`:''}
+        </div>
+        <div class="s-total">${c.Total} total result${c.Total!==1?'s':''}</div>
+      </div>`;
+    }).join('');
+    el.innerHTML = cardsHtml.trim() ? `<div class="subject-grid">${cardsHtml}</div>` : '<div style="font-size:13px;color:var(--ink-soft);padding:8px 0;">No results announced yet — this will fill in once results come in!</div>';
+  }
+
+  /* ---------- SUBJECT / MEDAL / YEAR FILTERS ---------- */
+  function renderSubjectFilterOptions(){
+    const sel = document.getElementById('subjectFilter');
+    const current = sel.value;
+    const subs = [...new Set(records.map(effSubject).filter(Boolean))];
+    subs.sort((a,b)=>{
+      const ia = SUBJECT_ORDER.indexOf(a), ib = SUBJECT_ORDER.indexOf(b);
+      if(ia===-1 && ib===-1) return a.localeCompare(b);
+      if(ia===-1) return 1;
+      if(ib===-1) return -1;
+      return ia-ib;
+    });
+    sel.innerHTML = '<option value="">All subjects</option>' + subs.map(s=>`<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
+    if(subs.includes(current)) sel.value = current;
+  }
+  function renderYearFilterOptions(){
+    const sel = document.getElementById('yearFilter');
+    const current = sel.value;
+    const years = [...new Set(records.filter(r=>r.examDate).map(r=>parseInt(r.examDate.slice(0,4),10)))].sort((a,b)=>b-a);
+    sel.innerHTML = '<option value="">All years</option>' + years.map(y=>`<option value="${y}">${examYearLabel(y)}</option>`).join('');
+    if(years.map(String).includes(current)) sel.value = current;
+  }
+  document.getElementById('subjectFilter').addEventListener('change', renderRecords);
+  document.getElementById('resultFilter').addEventListener('change', renderRecords);
+  document.getElementById('yearFilter').addEventListener('change', renderRecords);
+
+  /* ---------- RECORDS RENDER ---------- */
+  function renderRecords(){
+    const list = document.getElementById('recordsList');
+    const subjectVal = document.getElementById('subjectFilter').value;
+    const resultVal = document.getElementById('resultFilter').value;
+    const yearVal = document.getElementById('yearFilter').value;
+    let filtered = records;
+    if(subjectVal) filtered = filtered.filter(r=>effSubject(r)===subjectVal);
+    if(resultVal){
+      filtered = resultVal==='Pending' ? filtered.filter(r=>!r.result) : filtered.filter(r=>r.result===resultVal);
+    }
+    if(yearVal) filtered = filtered.filter(r=>r.examDate && r.examDate.slice(0,4)===yearVal);
+
+    if(records.length === 0){
+      list.innerHTML = `<div class="empty"><div class="big">🏆</div>No records yet.<br>Click "Add Record" to get started.</div>`;
+      renderMedalShelf(); renderHeroTrophy(); renderDonutChart(); renderLevelBars(); renderSubjectGrid(); renderYearGroups(); renderAwardSummary(); renderPendingSection();
+      return;
+    }
+    if(filtered.length === 0){
+      list.innerHTML = `<div class="empty"><div class="big">🔍</div>No records match these filters.</div>`;
+      renderMedalShelf(); renderHeroTrophy(); renderDonutChart(); renderLevelBars(); renderSubjectGrid(); renderYearGroups(); renderAwardSummary(); renderPendingSection();
+      return;
+    }
+    const sorted = [...filtered].sort((a,b)=>(b.examDate||'').localeCompare(a.examDate||''));
+    list.innerHTML = `<div class="card">` + sorted.map(r=>{
+      const progTags = (r.eligibility||[]).map(e=>{
+        const prog = programs.find(p=>p.id===e.programId);
+        if(!prog) return '';
+        return `<span class="prog-tag">${prog.org ? prog.org+' · ' : ''}${prog.name}${e.submitted ? ' ✓' : ''}</span>`;
+      }).join('');
+      return `
+      <div class="record-row">
+        <div>
+          <div class="record-title">
+            <span class="${subjectTagClass(effSubject(r))}">${escapeHtml(effSubject(r))}</span>
+            ${escapeHtml(r.exam)}
+            <span class="${chipClass(r.result)}">${chipLabel(r.result)}</span>
+          </div>
+          <div class="meta-line">${escapeHtml(effType(r)||'')}${effType(r) && r.level ? ' · ' : ''}${escapeHtml(r.level||'')} · ${fmtDate(r.examDate)}</div>
+          ${progTags ? `<div class="prog-tags">${progTags}</div>` : ''}
+        </div>
+        <div class="row-actions">
+          <button class="btn ghost small" onclick="editRecord('${r.id}')">Edit</button>
+          <button class="btn danger small" onclick="deleteRecord('${r.id}')">Delete</button>
+        </div>
+      </div>`;
+    }).join('') + `</div>`;
+    renderMedalShelf(); renderHeroTrophy(); renderDonutChart(); renderLevelBars(); renderSubjectGrid(); renderYearGroups(); renderAwardSummary(); renderPendingSection();
+  }
+
+  /* ---------- PROGRAMS RENDER ---------- */
+  function renderPrograms(){
+    const list = document.getElementById('programsList');
+    if(programs.length === 0){
+      list.innerHTML = `<div class="empty"><div class="big">🏅</div>No awards set up yet.<br>Click "Add Award" to get started.</div>`;
+      return;
+    }
+    const sorted = [...programs].sort((a,b)=>(a.applyEnd||'').localeCompare(b.applyEnd||''));
+    list.innerHTML = sorted.map(p=>`
+      <div class="prog-card">
+        <div>
+          <div class="prog-name">${escapeHtml(p.name)}</div>
+          <div class="prog-org">${escapeHtml(p.org||'')} ${p.year ? '· B.E. '+escapeHtml(p.year) : ''}</div>
+          <div class="prog-dates">
+            <div>Eligible results: <b>${fmtDate(p.periodStart)} – ${fmtDate(p.periodEnd)}</b></div>
+            <div>Eligible type: <b>${escapeHtml(p.eligibleType||'Both TH and International')}</b></div>
+            <div>Application window: <b>${fmtDate(p.applyStart)} – ${fmtDate(p.applyEnd)}</b></div>
+          </div>
+        </div>
+        <div class="row-actions">
+          <button class="btn ghost small" onclick="editProgram('${p.id}')">Edit</button>
+          <button class="btn danger small" onclick="deleteProgram('${p.id}')">Delete</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  /* ---------- helper: mailto & gcal links ---------- */
+  function mailtoLink(subject, body){
+    return `mailto:${REMINDER_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  }
+  function gcalLink(title, isoDate, details){
+    const d = isoDate.replace(/-/g,'');
+    return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${d}/${d}&details=${encodeURIComponent(details)}`;
+  }
+
+  /* ---------- DEADLINES / REMINDERS RENDER ---------- */
+  function groupByProgram(items){
+    const map = new Map();
+    items.forEach(it=>{
+      if(!map.has(it.prog.id)) map.set(it.prog.id, {prog:it.prog, entries:[]});
+      map.get(it.prog.id).entries.push(it);
+    });
+    return Array.from(map.values());
+  }
+
+  function renderDeadlines(){
+    const showSubmitted = document.getElementById('showSubmittedToggle').checked;
+    const showAll = document.getElementById('showAllToggle').checked;
+    const SOON_DAYS = 15;
+
+    // Closing — all eligible award/record pairs not yet closed (or unspecified)
+    let allClosingItems = [];
+    records.forEach(r=>{
+      (r.eligibility||[]).forEach(e=>{
+        const prog = programs.find(p=>p.id===e.programId);
+        if(!prog) return;
+        if(!showSubmitted && e.submitted) return;
+        allClosingItems.push({record:r, prog, eligibility:e});
+      });
+    });
+    allClosingItems.sort((a,b)=>(a.prog.applyEnd||'').localeCompare(b.prog.applyEnd||''));
+
+    const urgentClosing = allClosingItems.filter(it=>{
+      const d = daysUntil(it.prog.applyEnd);
+      return d !== null && d >= 0 && d <= 14 && !it.eligibility.submitted;
+    }).length;
+
+    // Opening — application window not yet started
+    let allOpeningItems = [];
+    records.forEach(r=>{
+      (r.eligibility||[]).forEach(e=>{
+        const prog = programs.find(p=>p.id===e.programId);
+        if(!prog || !prog.applyStart) return;
+        if(!showSubmitted && e.submitted) return;
+        const d = daysUntil(prog.applyStart);
+        if(d !== null && d >= 0) allOpeningItems.push({record:r, prog, eligibility:e, daysLeft:d});
+      });
+    });
+    allOpeningItems.sort((a,b)=>a.daysLeft-b.daysLeft);
+    const urgentOpening = allOpeningItems.filter(it=>it.daysLeft<=3).length;
+
+    const badge = document.getElementById('deadlineBadge');
+    const totalUrgent = urgentClosing + urgentOpening;
+    if(totalUrgent > 0){ badge.style.display='inline-block'; badge.textContent = totalUrgent; }
+    else { badge.style.display='none'; }
+
+    // Apply the "soon" window unless the person asked to see everything
+    const closingItems = showAll ? allClosingItems : allClosingItems.filter(it=>{
+      const d = daysUntil(it.prog.applyEnd);
+      return d===null || d<=SOON_DAYS;
+    });
+    const openingItems = showAll ? allOpeningItems : allOpeningItems.filter(it=>it.daysLeft<=SOON_DAYS);
+
+    // ---- Opening list, grouped by award ----
+    const openingEl = document.getElementById('openingList');
+    const openingGroups = groupByProgram(openingItems).sort((a,b)=>a.entries[0].daysLeft-b.entries[0].daysLeft);
+    if(openingGroups.length===0){
+      openingEl.innerHTML = `<div class="empty" style="padding:26px;"><div class="big">📬</div>${showAll ? 'No upcoming application openings.' : `Nothing opening within the next ${SOON_DAYS} days. Toggle "Show everything" above to see further-out awards.`}</div>`;
+    } else {
+      openingEl.innerHTML = openingGroups.map(g=>{
+        const d = g.entries[0].daysLeft;
+        let cls='ok', label=d+' days', sub='until opens';
+        if(d<=3){ cls='urgent'; sub='opens very soon'; }
+        else if(d<=10){ cls='soon'; sub='opens soon'; }
+        const subjText = `${g.prog.name} (${g.prog.org||''}) opens for applications on ${fmtDate(g.prog.applyStart)}`;
+        const recordNames = g.entries.map(it=>`${it.record.exam} — ${chipLabel(it.record.result)}`).join('; ');
+        const bodyText = `Reminder: the application window for "${g.prog.name}" (${g.prog.org||''}) opens on ${fmtDate(g.prog.applyStart)} and closes on ${fmtDate(g.prog.applyEnd)}.\n\nEligible results: ${recordNames}.`;
+        const linkedRows = g.entries.map(it=>`<div class="linked-record-row"><span>${escapeHtml(it.record.exam)} — ${chipLabel(it.record.result)} · ${fmtDate(it.record.examDate)}</span></div>`).join('');
+        return `
+        <div class="deadline-item">
+          <div class="deadline-left">
+            <div class="p-name">${escapeHtml(g.prog.name)} ${g.prog.org ? '· '+escapeHtml(g.prog.org):''}</div>
+            <div class="r-name">Opens ${fmtDate(g.prog.applyStart)}, closes ${fmtDate(g.prog.applyEnd)} · ${g.entries.length} eligible result${g.entries.length!==1?'s':''}</div>
+            <div class="linked-records">${linkedRows}</div>
+            <div class="action-row" style="margin-top:8px;">
+              <a href="${mailtoLink('Reminder: '+g.prog.name+' opens soon', bodyText)}"><button class="btn mail small">Email reminder</button></a>
+              <a href="${gcalLink('Apply: '+g.prog.name, g.prog.applyStart, subjText)}" target="_blank" rel="noopener"><button class="btn cal small">Add to Calendar</button></a>
+            </div>
+          </div>
+          <div class="deadline-right">
+            <div class="countdown ${cls}">${label}<span class="sub">${sub}</span></div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    // ---- Closing list, grouped by award ----
+    const list = document.getElementById('deadlinesList');
+    const closingGroups = groupByProgram(closingItems).sort((a,b)=>(a.prog.applyEnd||'').localeCompare(b.prog.applyEnd||''));
+    if(closingGroups.length === 0){
+      list.innerHTML = `<div class="empty" style="padding:26px;"><div class="big">🔔</div>${showAll ? 'Nothing to remind you about yet.<br>Link records to awards in the Records tab first.' : `Nothing closing within the next ${SOON_DAYS} days. Toggle "Show everything" above to see further-out awards.`}</div>`;
+      return;
+    }
+    list.innerHTML = closingGroups.map(g=>{
+      const d = daysUntil(g.prog.applyEnd);
+      let cls='ok', label='', sub='left';
+      if(d===null){ cls='closed'; label='Unspecified'; sub=''; }
+      else if(d < 0){ cls='closed'; label='Closed'; sub=''; }
+      else if(d <= 7){ cls='urgent'; label=d+' days'; sub='very urgent'; }
+      else if(d <= 30){ cls='soon'; label=d+' days'; sub='closing soon'; }
+      else { cls='ok'; label=d+' days'; sub='plenty of time'; }
+      const linkedRows = g.entries.map(it=>`
+        <div class="linked-record-row">
+          <span>${escapeHtml(it.record.exam)} — ${chipLabel(it.record.result)} · ${fmtDate(it.record.examDate)}</span>
+          <label class="check" style="margin:0;">
+            <input type="checkbox" ${it.eligibility.submitted?'checked':''} onchange="toggleSubmitted('${it.record.id}','${g.prog.id}', this.checked)">
+            Submitted
+          </label>
+        </div>`).join('');
+      return `
+      <div class="deadline-item">
+        <div class="deadline-left">
+          <div class="p-name">${escapeHtml(g.prog.name)} ${g.prog.org ? '· '+escapeHtml(g.prog.org):''}</div>
+          <div class="r-name">Apply by ${fmtDate(g.prog.applyEnd)} · ${g.entries.length} eligible result${g.entries.length!==1?'s':''}</div>
+          <div class="linked-records">${linkedRows}</div>
+        </div>
+        <div class="countdown ${cls}">${label}<span class="sub">${sub}</span></div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderAll(){
+    renderSubjectFilterOptions();
+    renderYearFilterOptions();
+    renderRecords();
+    renderPrograms();
+    renderDeadlines();
+  }
+  document.getElementById('showSubmittedToggle').addEventListener('change', renderDeadlines);
+  document.getElementById('showAllToggle').addEventListener('change', renderDeadlines);
+
+  /* ---------- LEVEL DROPDOWN LOGIC ---------- */
+  function populateLevelSelect(selectedValue, examName){
+    const sel = document.getElementById('f_level');
+    const isKangaroo = /kangaroo/i.test(examName||'');
+    const options = isKangaroo ? KANGAROO_LEVELS : GENERIC_LEVELS;
+    sel.innerHTML = options.map(o=>`<option value="${escapeHtml(o)}">${escapeHtml(o)}</option>`).join('');
+    if(selectedValue && options.includes(selectedValue)) sel.value = selectedValue;
+  }
+  window.onExamNameChange = function(){
+    const examName = document.getElementById('f_exam').value;
+    const currentLevel = document.getElementById('f_level').value;
+    populateLevelSelect(currentLevel, examName);
+  };
+  document.getElementById('f_subject').addEventListener('change', function(){
+    document.getElementById('f_subjectCustomWrap').style.display = this.value==='Other' ? 'block' : 'none';
+  });
+
+  /* ---------- ELIGIBILITY CROSS-CHECK (exam date + type vs award's eligible period/type) ---------- */
+  function isDateEligible(examDate, periodStart, periodEnd){
+    if(!periodStart && !periodEnd) return true; // award has no date restriction defined
+    if(!examDate) return false; // can't verify without an exam date
+    if(periodStart && examDate < periodStart) return false;
+    if(periodEnd && examDate > periodEnd) return false;
+    return true;
+  }
+  function isTypeEligible(recordType, eligibleType){
+    if(!eligibleType) return true; // legacy award with no eligible type set
+    if(eligibleType === 'Both TH and International') return true;
+    if(recordType === 'Both TH and International') return true;
+    return recordType === eligibleType;
+  }
+  let modalInitialSelectedIds = [];
+  function refreshProgCheckList(){
+    const progList = document.getElementById('progCheckList');
+    const examDate = document.getElementById('f_examDate').value;
+    const type = document.getElementById('f_type').value;
+    if(programs.length===0){
+      progList.innerHTML = `<div style="font-size:12.5px;color:var(--ink-soft);padding:6px;">No awards set up yet — add one in the "Awards" tab.</div>`;
+      return;
+    }
+    const existingCheckboxes = progList.querySelectorAll('input[type=checkbox]');
+    const previouslyChecked = existingCheckboxes.length>0
+      ? new Set(Array.from(existingCheckboxes).filter(el=>el.checked).map(el=>el.value))
+      : new Set(modalInitialSelectedIds);
+    progList.innerHTML = programs.map(p=>{
+      const dateOk = isDateEligible(examDate, p.periodStart, p.periodEnd);
+      const typeOk = isTypeEligible(type, p.eligibleType);
+      const eligible = dateOk && typeOk;
+      const reasons = [];
+      if(!dateOk) reasons.push(examDate ? 'exam date outside eligible period' : 'set the exam date first');
+      if(!typeOk) reasons.push('competition type not eligible');
+      const checked = eligible && previouslyChecked.has(p.id);
+      return `
+      <div class="prog-check-item ${eligible?'':'ineligible'}">
+        <input type="checkbox" value="${p.id}" ${checked?'checked':''} ${eligible?'':'disabled'} id="chk_${p.id}">
+        <label for="chk_${p.id}">${escapeHtml(p.name)} ${p.org?'· '+escapeHtml(p.org):''}${!eligible?`<span class="ineligible-note">(${reasons.join(', ')})</span>`:''}</label>
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('f_examDate').addEventListener('change', refreshProgCheckList);
+  document.getElementById('f_type').addEventListener('change', refreshProgCheckList);
+
+  /* ---------- RECORD MODAL LOGIC ---------- */
+  const recordOverlay = document.getElementById('recordOverlay');
+  function openRecordModal(existing){
+    document.getElementById('recordModalTitle').textContent = existing ? 'Edit Record' : 'Add Record';
+    document.getElementById('recordId').value = existing ? existing.id : '';
+    document.getElementById('f_subject').value = existing ? (existing.subject||'Math') : 'Math';
+    document.getElementById('f_subjectCustom').value = existing ? (existing.subjectCustom||'') : '';
+    document.getElementById('f_subjectCustomWrap').style.display = (existing && existing.subject==='Other') ? 'block' : 'none';
+    document.getElementById('f_exam').value = existing ? existing.exam : '';
+    document.getElementById('f_type').value = effType(existing);
+    populateLevelSelect(existing ? existing.level : '', existing ? existing.exam : '');
+    document.getElementById('f_examDate').value = existing ? existing.examDate : '';
+    document.getElementById('f_result').value = existing ? existing.result : '';
+
+    modalInitialSelectedIds = existing ? (existing.eligibility||[]).map(e=>e.programId) : [];
+    refreshProgCheckList();
+    recordOverlay.classList.add('active');
+  }
+  document.getElementById('addRecordBtn').addEventListener('click', ()=>openRecordModal(null));
+  document.getElementById('cancelRecordBtn').addEventListener('click', ()=>recordOverlay.classList.remove('active'));
+
+  document.getElementById('saveRecordBtn').addEventListener('click', async ()=>{
+    const id = document.getElementById('recordId').value || uid();
+    const exam = document.getElementById('f_exam').value.trim();
+    if(!exam){ await showAlert('Please enter the competition name'); return; }
+    const existing = records.find(r=>r.id===id);
+    const checkedIds = Array.from(document.querySelectorAll('#progCheckList input[type=checkbox]:checked')).map(el=>el.value);
+    const prevElig = existing ? (existing.eligibility||[]) : [];
+    const eligibility = checkedIds.map(pid=>{
+      const prev = prevElig.find(e=>e.programId===pid);
+      return prev || {programId:pid, submitted:false, submittedDate:null};
+    });
+    const rec = {
+      id,
+      subject: document.getElementById('f_subject').value,
+      subjectCustom: document.getElementById('f_subjectCustom').value.trim(),
+      exam,
+      type: document.getElementById('f_type').value,
+      level: document.getElementById('f_level').value,
+      examDate: document.getElementById('f_examDate').value,
+      result: document.getElementById('f_result').value,
+      eligibility
+    };
+    if(existing){ records = records.map(r=>r.id===id?rec:r); }
+    else { records.push(rec); }
+    await saveRecords();
+    recordOverlay.classList.remove('active');
+    renderAll();
+  });
+
+  window.editRecord = function(id){ const r = records.find(x=>x.id===id); if(r) openRecordModal(r); };
+  window.deleteRecord = async function(id){
+    if(!(await showConfirm('Delete this record?'))) return;
+    records = records.filter(r=>r.id!==id);
+    await saveRecords();
+    renderAll();
+  };
+
+  /* ---------- PROGRAM MODAL LOGIC ---------- */
+  const programOverlay = document.getElementById('programOverlay');
+  function populateYearSelect(selectedValue){
+    const sel = document.getElementById('p_year');
+    const startBE = 2569;
+    const years = [];
+    for(let i=0; i<=15; i++) years.push(String(startBE+i));
+    sel.innerHTML = years.map(y=>{
+      const ad = parseInt(y,10)-543;
+      return `<option value="${y}">${ad} (${y})</option>`;
+    }).join('');
+    if(selectedValue && years.includes(String(selectedValue))){
+      sel.value = String(selectedValue);
+    } else if(selectedValue) {
+      const ad = parseInt(selectedValue,10)-543;
+      const opt = document.createElement('option');
+      opt.value = selectedValue; opt.textContent = `${ad} (${selectedValue})`;
+      sel.insertBefore(opt, sel.firstChild);
+      sel.value = selectedValue;
+    } else {
+      sel.value = String(startBE);
+    }
+  }
+  function openProgramModal(existing){
+    document.getElementById('programModalTitle').textContent = existing ? 'Edit Award' : 'Add Award / Organization';
+    document.getElementById('programId').value = existing ? existing.id : '';
+    document.getElementById('p_name').value = existing ? existing.name : '';
+    document.getElementById('p_org').value = existing ? existing.org : '';
+    populateYearSelect(existing ? existing.year : '');
+    document.getElementById('p_periodStart').value = existing ? existing.periodStart : '';
+    document.getElementById('p_periodEnd').value = existing ? existing.periodEnd : '';
+    document.getElementById('p_eligibleType').value = existing ? (existing.eligibleType||'Both TH and International') : 'Both TH and International';
+    document.getElementById('p_applyStart').value = existing ? existing.applyStart : '';
+    document.getElementById('p_applyEnd').value = existing ? existing.applyEnd : '';
+    programOverlay.classList.add('active');
+  }
+  document.getElementById('addProgramBtn').addEventListener('click', ()=>openProgramModal(null));
+  document.getElementById('cancelProgramBtn').addEventListener('click', ()=>programOverlay.classList.remove('active'));
+
+  document.getElementById('saveProgramBtn').addEventListener('click', async ()=>{
+    const id = document.getElementById('programId').value || uid();
+    const name = document.getElementById('p_name').value.trim();
+    if(!name){ await showAlert('Please enter the award name'); return; }
+    const prog = {
+      id, name,
+      org: document.getElementById('p_org').value.trim(),
+      year: document.getElementById('p_year').value.trim(),
+      periodStart: document.getElementById('p_periodStart').value,
+      periodEnd: document.getElementById('p_periodEnd').value,
+      eligibleType: document.getElementById('p_eligibleType').value,
+      applyStart: document.getElementById('p_applyStart').value,
+      applyEnd: document.getElementById('p_applyEnd').value,
+    };
+    const existing = programs.find(p=>p.id===id);
+    if(existing){ programs = programs.map(p=>p.id===id?prog:p); }
+    else { programs.push(prog); }
+    await savePrograms();
+    programOverlay.classList.remove('active');
+    renderAll();
+  });
+
+  window.editProgram = function(id){ const p = programs.find(x=>x.id===id); if(p) openProgramModal(p); };
+  window.deleteProgram = async function(id){
+    if(!(await showConfirm('Delete this award? It will be unlinked from any records that reference it.'))) return;
+    programs = programs.filter(p=>p.id!==id);
+    records = records.map(r=>({...r, eligibility:(r.eligibility||[]).filter(e=>e.programId!==id)}));
+    await savePrograms();
+    await saveRecords();
+    renderAll();
+  };
+
+  window.toggleSubmitted = async function(recordId, programId, checked){
+    records = records.map(r=>{
+      if(r.id !== recordId) return r;
+      return {...r, eligibility:(r.eligibility||[]).map(e=>e.programId===programId ? {...e, submitted:checked, submittedDate: checked ? new Date().toISOString().slice(0,10) : null} : e)};
+    });
+    await saveRecords();
+    renderDeadlines();
+    renderRecords();
+  };
+
+  loadAll();
+})();
+</script>
+</body>
+</html>
